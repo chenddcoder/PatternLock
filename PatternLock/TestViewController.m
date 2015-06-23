@@ -39,7 +39,7 @@
 {	
 	[super viewDidAppear:animated];
 	
-	self.lockScreenView = [[SPLockScreen alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.width)];
+	self.lockScreenView = [[SPLockScreen alloc]initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.width)andNodeRadius:19.0f andOuterRadius:20 andOutColor:[UIColor whiteColor] andInnerColor:[UIColor redColor] andHighlightColor:[UIColor redColor] andLineColor:[UIColor whiteColor] andLineGridColor:[UIColor whiteColor]];
 	self.lockScreenView.center = self.view.center;
 	self.lockScreenView.delegate = self;
 	self.lockScreenView.backgroundColor = [UIColor clearColor];

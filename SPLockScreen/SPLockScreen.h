@@ -22,8 +22,15 @@
 
 @property (nonatomic) BOOL allowClosedPattern;			// Set to YES to allow a closed pattern, a complex type pattern; NO by default
 
-
 // Init Method
 
 - (id)initWithDelegate:(id<LockScreenDelegate>)lockDelegate;
+- (id)initWithFrame:(CGRect)frame
+      andNodeRadius:(CGFloat)nodeRadius
+     andOuterRadius:(CGFloat)outerRadius
+        andOutColor:(UIColor*)outerColor
+      andInnerColor:(UIColor*)innerColor
+  andHighlightColor:(UIColor*)highlightColor
+       andLineColor:(UIColor*)lineColor
+   andLineGridColor:(UIColor*)lineGridColor;
 @end

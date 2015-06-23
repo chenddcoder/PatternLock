@@ -8,20 +8,28 @@
 
 #import "SPLockOverlay.h"
 
-#define kLineColor			[UIColor colorWithRed:255.0/255.0 green:252.0/255.0 blue:78.0/255.0 alpha:0.9]
-#define kLineGridColor  [UIColor colorWithRed:255.0/255.0 green:252.0/255.0 blue:233.0/255.0 alpha:1.0]
-
+@interface SPLockOverlay()
+@property (nonatomic, assign) CGFloat nodeRadius;
+@property (nonatomic, strong) UIColor * lineColor;
+@property (nonatomic, strong) UIColor * lineGridColor;
+@end
 @implementation SPLockOverlay
 
 @synthesize pointsToDraw;
 
 - (id)initWithFrame:(CGRect)frame
+      andNodeRadius:(CGFloat)nodeRadius
+       andLineColor:(UIColor*)lineColor
+   andLineGridColor:(UIColor*)lineGridColor
 {
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
 			self.backgroundColor = [UIColor clearColor];
 			self.pointsToDraw = [[NSMutableArray alloc]init];
+        _nodeRadius=nodeRadius;
+        _lineColor=lineColor;
+        _lineGridColor=lineGridColor;
     }
     return self;
 }
@@ -33,17 +41,17 @@
 	CGFloat lineWidth = 5.0;
 	
 	CGContextSetLineWidth(context, lineWidth);
-	CGContextSetStrokeColorWithColor(context, kLineColor.CGColor);
+	CGContextSetStrokeColorWithColor(context, _lineColor.CGColor);
     for(SPLine *line in self.pointsToDraw)
 		{			
 			CGContextMoveToPoint(context, line.fromPoint.x, line.fromPoint.y);
 			CGContextAddLineToPoint(context, line.toPoint.x, line.toPoint.y);
 			CGContextStrokePath(context);
 			
-			CGFloat nodeRadius = 14.0;
+			CGFloat nodeRadius = _nodeRadius;
 			
 			CGRect fromBubbleFrame = CGRectMake(line.fromPoint.x- nodeRadius/2, line.fromPoint.y - nodeRadius/2, nodeRadius, nodeRadius);
-			CGContextSetFillColorWithColor(context, kLineGridColor.CGColor);
+			CGContextSetFillColorWithColor(context, _lineGridColor.CGColor);
 			CGContextFillEllipseInRect(context, fromBubbleFrame);
 			
 			if(line.isFullLength){

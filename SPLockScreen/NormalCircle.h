@@ -13,7 +13,10 @@
 @property (nonatomic) BOOL selected;
 @property (nonatomic) CGContextRef cacheContext;
 
-- (id)initwithRadius:(CGFloat)radius;
+- (id)initwithRadius:(CGFloat)radius
+         andOutColor:(UIColor*)outColor
+       andInnerColor:(UIColor*)innerColor
+   andHighlightColor:(UIColor*)highlightColor;
 
 - (void)highlightCell;
 - (void)resetCell;

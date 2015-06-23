@@ -15,6 +15,13 @@
 #define kAlterTwo							4321
 #define kTagIdentifier				22222
 
+#define kOuterColor			[UIColor colorWithRed:128.0/255.0 green:127.0/255.0 blue:123.0/255.0 alpha:0.9]
+#define kInnerColor			[UIColor colorWithRed:43.0/255.0 green:43.0/255.0 blue:43.0/255.0 alpha:0.75]
+#define kHighlightColor	[UIColor colorWithRed:255.0/255.0 green:252.0/255.0 blue:78.0/255.0 alpha:0.9]
+#define kLineColor			[UIColor colorWithRed:255.0/255.0 green:252.0/255.0 blue:78.0/255.0 alpha:0.9]
+#define kLineGridColor  [UIColor colorWithRed:255.0/255.0 green:252.0/255.0 blue:233.0/255.0 alpha:1.0]
+#define kOuterRadius 30.0f
+#define kNodeRadius 14.0f
 @interface SPLockScreen()
 @property (nonatomic, strong) NormalCircle *selectedCell;
 @property (nonatomic, strong) SPLockOverlay *overLay;
@@ -22,6 +29,13 @@
 @property (nonatomic, strong) NSMutableDictionary *drawnLines;
 @property (nonatomic, strong) NSMutableArray *finalLines, *cellsInOrder;
 
+@property (nonatomic, strong) UIColor * outerColor;//圈外Color
+@property (nonatomic, strong) UIColor * innerColor;//圈内Color
+@property (nonatomic, strong) UIColor * highlightColor;//高亮Color
+@property (nonatomic, strong) UIColor * lineColor;//连线Color
+@property (nonatomic, strong) UIColor * lineGridColor;//连线交点Color
+@property (nonatomic, assign) CGFloat outerRadius;//外圈大小
+@property (nonatomic, assign) CGFloat nodeRadius;//选中点大小
 - (void)resetScreen;
 
 @end
@@ -30,6 +44,12 @@
 @synthesize delegate,selectedCell,overLay,oldCellIndex,currentCellIndex,drawnLines,finalLines,cellsInOrder,allowClosedPattern;
 
 - (id)init{
+    _outerRadius=kOuterRadius;
+    _outerColor=kOuterColor;
+    _innerColor=kInnerColor;
+    _highlightColor=kHighlightColor;
+    _lineColor=kLineColor;
+    _lineGridColor=kLineGridColor;
 	CGRect frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width);
 	self = [super initWithFrame:frame];
 	if (self) {
@@ -47,9 +67,39 @@
 	
 	return self;
 }
-
+- (id)initWithFrame:(CGRect)frame{
+    _nodeRadius=kNodeRadius;
+    _outerRadius=kOuterRadius;
+    _outerColor=kOuterColor;
+    _innerColor=kInnerColor;
+    _highlightColor=kHighlightColor;
+    _lineColor=kLineColor;
+    _lineGridColor=kLineGridColor;
+    frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width);
+    self = [super initWithFrame:frame];
+    if (self) {
+        [self setNeedsDisplay];
+        [self setUpTheScreen];
+        [self addGestureRecognizer];
+    }
+    return self;
+}
 - (id)initWithFrame:(CGRect)frame
+      andNodeRadius:(CGFloat)nodeRadius
+     andOuterRadius:(CGFloat)outerRadius
+        andOutColor:(UIColor*)outerColor
+      andInnerColor:(UIColor*)innerColor
+  andHighlightColor:(UIColor*)highlightColor
+       andLineColor:(UIColor*)lineColor
+   andLineGridColor:(UIColor*)lineGridColor
 {
+    _nodeRadius=nodeRadius;
+    _outerRadius=outerRadius;
+    _outerColor=outerColor;
+    _innerColor=innerColor;
+    _highlightColor=highlightColor;
+    _lineColor=lineColor;
+    _lineGridColor=lineGridColor;
 	frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width);
     self = [super initWithFrame:frame];
     if (self) {
@@ -61,16 +111,16 @@
 }
 
 - (void)setUpTheScreen{
-	CGFloat radius = 30.0;
-	CGFloat gap = (self.frame.size.width - 6 * radius )/4;
-	CGFloat topOffset = radius;
+    
+	CGFloat gap = (self.frame.size.width - 6 * _outerRadius )/4;
+	CGFloat topOffset = _outerRadius;
 	
 	for (int i=0; i < 9; i++) {
-		NormalCircle *circle = [[NormalCircle alloc]initwithRadius:radius];
+		NormalCircle *circle = [[NormalCircle alloc]initwithRadius:_outerRadius andOutColor:_outerColor andInnerColor:_innerColor andHighlightColor:_highlightColor];
 		int column =  i % 3;
 		int row    = i / 3;
-		CGFloat x = (gap + radius) + (gap + 2*radius)*column;
-		CGFloat y = (row * gap + row * 2 * radius) + topOffset;
+		CGFloat x = (gap + _outerRadius) + (gap + 2*_outerRadius)*column;
+		CGFloat y = (row * gap + row * 2 * _outerRadius) + topOffset;
 		circle.center = CGPointMake(x, y);
 		circle.tag = (row+kSeed)*kTagIdentifier + (column + kSeed);
 		[self addSubview:circle];
@@ -79,7 +129,10 @@
 	self.finalLines = [[NSMutableArray alloc]init];
 	self.cellsInOrder = [[NSMutableArray alloc]init];
 	// Add an overlay view
-	self.overLay = [[SPLockOverlay alloc]initWithFrame:self.frame];
+	self.overLay = [[SPLockOverlay alloc]initWithFrame:self.frame
+                    andNodeRadius:_nodeRadius
+                                          andLineColor:_lineColor
+                                      andLineGridColor:_lineGridColor];
 	[self.overLay setUserInteractionEnabled:NO];
 	[self addSubview:self.overLay];
 	// set selected cell indexes to be invalid
