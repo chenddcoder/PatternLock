@@ -12,7 +12,7 @@
 
 @protocol LockScreenDelegate <NSObject>
 
-- (void)lockScreen:(SPLockScreen *)lockScreen didEndWithPattern:(NSNumber *)patternNumber;
+- (void)lockScreen:(SPLockScreen *)lockScreen didEndWithPattern:(NSString *)patternNumber;
 
 @end
 

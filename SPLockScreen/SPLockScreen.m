@@ -194,8 +194,13 @@
 	self.oldCellIndex = self.currentCellIndex;
 	NSInteger cellPos = [self indexForPoint:point];
 	
-	if(cellPos >=0 && cellPos != self.oldCellIndex)
-		[self.cellsInOrder addObject:@(self.currentCellIndex)];
+    if(cellPos >=0 && cellPos != self.oldCellIndex){
+        //修复重复添加的bug 2016.2.26
+        if (![self.cellsInOrder containsObject:@(self.currentCellIndex)]) {
+            [self.cellsInOrder addObject:@(self.currentCellIndex)];
+        }
+    }
+		
 	
 	if(cellPos < 0 && self.oldCellIndex < 0) return;
 	
@@ -235,15 +240,23 @@
 	[self resetScreen];
 }
 
-- (NSNumber *)patternToUniqueId
+- (NSString *)patternToUniqueId
 {
-	long finalNumber = 0;
-	long thisNum;
-	for(int i = self.cellsInOrder.count - 1 ; i >= 0 ; i--){
-		thisNum = ([[self.cellsInOrder objectAtIndex:i] integerValue] + 1) * pow(10, (self.cellsInOrder.count - i - 1));
-		finalNumber = finalNumber + thisNum;
+//	long finalNumber = 0;
+//	long thisNum;
+    NSMutableString * uniqueId=[[NSMutableString alloc]init];
+//    NSLog(@"cellsInOrder=%d",self.cellsInOrder.count);
+//    for (int i=0; i<self.cellsInOrder.count; i++) {
+//        NSLog(@"%d",[[self.cellsInOrder objectAtIndex:i] integerValue] );
+//    }
+	for(int i = 0 ; i <self.cellsInOrder.count ; i++){
+        //配合android版本改造为0～8 2016.2.26
+//		thisNum = ([[self.cellsInOrder objectAtIndex:i] integerValue]) * pow(10, (self.cellsInOrder.count - i - 1));
+//		finalNumber = finalNumber + thisNum;
+//        NSLog(@"finalNumber=%d finalNumber=%d thisNum=%d",finalNumber,finalNumber,thisNum);
+        [uniqueId appendString:[NSString stringWithFormat:@"%ld",(long)[[self.cellsInOrder objectAtIndex:i] integerValue]]];
 	}
-	return @(finalNumber);
+	return uniqueId;
 }
 
 - (void)resetScreen
